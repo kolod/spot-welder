@@ -114,17 +114,56 @@ P5.5 - +Vref (ADC Reference Voltage)
 ## Building and Flashing
 
 ### Prerequisites
-- [PlatformIO](https://platformio.org/)
+- [Meson](https://mesonbuild.com/) and Ninja (`pip install meson ninja`)
+- [SDCC](http://sdcc.sourceforge.net/) in PATH
+- [stcgal](https://pypi.org/project/stcgal/) (`pip install stcgal`)
+- [rich](https://pypi.org/project/rich/) for memory summary output (`pip install rich`)
 - USB-to-Serial adapter for STC programming
 
-### Build
+### Configure and Build
 ```bash
-platformio run -e STC8H1K08
+# Configure
+meson setup build
+
+# Build firmware
+meson compile -C build
+
+# Always-available memory summary target
+meson compile -C build print-memory-usage
+```
+
+### Build Configuration
+```bash
+# Change board/device
+meson setup build -Dboard=STC8H1K08
+
+# Change memory sizes
+meson setup build -Dflash_size=8192 -Dram_size=1024
+
+# Reconfigure existing build directory
+meson setup build --reconfigure
+meson configure build -Dboard=STC8H1K08
+```
+
+If the build directory has stale settings:
+```bash
+rm -rf build
+meson setup build
+```
+
+On Windows PowerShell:
+```powershell
+Remove-Item -Recurse -Force build
+meson setup build
 ```
 
 ### Upload
 ```bash
-platformio run -e STC8H1K08 -t upload --upload-port COM5
+# Linux/macOS style serial path
+stcgal -p /dev/ttyUSB0 -P stc8g build/spot-welder.ihx
+
+# Windows COM port example
+stcgal -p COM3 -P stc8g build/spot-welder.ihx
 ```
 
 ## Technical Details
