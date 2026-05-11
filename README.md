@@ -130,6 +130,12 @@ meson compile -C build
 
 # Always-available memory summary target
 meson compile -C build print-memory-usage
+
+# Detect and store upload port (saved in build/upload-port.txt)
+meson compile -C build detect-upload-port
+
+# Upload via Meson target (uses stcgal)
+meson compile -C build upload
 ```
 
 ### Build Configuration
@@ -139,6 +145,12 @@ meson setup build -Dboard=STC8H1K08
 
 # Change memory sizes
 meson setup build -Dflash_size=8192 -Dram_size=1024
+
+# Configure upload connection/protocol
+meson setup build -Dupload_port=COM3 -Dupload_protocol=stc8g
+
+# Set upload_port=auto to auto-detect serial port
+meson setup build -Dupload_port=auto
 
 # Reconfigure existing build directory
 meson setup build --reconfigure

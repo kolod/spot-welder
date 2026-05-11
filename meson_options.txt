@@ -16,3 +16,15 @@ option('ram_size',
   value: 1024,
   description: 'RAM size in bytes'
 )
+
+option('upload_port',
+  type: 'string',
+  value: 'COM3',
+  description: 'Serial port for stcgal upload (e.g., COM3 or /dev/ttyUSB0)'
+)
+
+option('upload_protocol',
+  type: 'string',
+  value: 'stc8g',
+  description: 'stcgal protocol name'
+)
