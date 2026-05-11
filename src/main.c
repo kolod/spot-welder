@@ -17,6 +17,19 @@
 uint16_t voltage;               // To hold the calculated voltage in 0.1 volts (e.g., 123 means 12.3V)
 uint8_t digit[3];               // To hold the current digits to display
 
+static const uint8_t digit_map[10] = {
+    (uint8_t)~0b00111111, // 0
+    (uint8_t)~0b00000110, // 1
+    (uint8_t)~0b01011011, // 2
+    (uint8_t)~0b01001111, // 3
+    (uint8_t)~0b01100110, // 4
+    (uint8_t)~0b01101101, // 5
+    (uint8_t)~0b01111101, // 6
+    (uint8_t)~0b00000111, // 7
+    (uint8_t)~0b01111111, // 8
+    (uint8_t)~0b01101111  // 9
+};
+
 static inline void display_digit_1() {
     DIGIT_3 = 0;                   // Disable digit 3 (P3.4)
     P1      = digit[0];            // Set segment data for the current digit
@@ -43,19 +56,6 @@ static inline void display_off() {
 
 // Function to update the digit array based on the voltage value
 void display_show_value(uint16_t value) {
-    const uint8_t digit_map[10] = {
-        (uint8_t)~0b00111111, // 0
-        (uint8_t)~0b00000110, // 1
-        (uint8_t)~0b01011011, // 2
-        (uint8_t)~0b01001111, // 3
-        (uint8_t)~0b01100110, // 4
-        (uint8_t)~0b01101101, // 5
-        (uint8_t)~0b01111101, // 6
-        (uint8_t)~0b00000111, // 7
-        (uint8_t)~0b01111111, // 8
-        (uint8_t)~0b01101111  // 9
-    };
-
     // if the value exceeds 999, display "Err"
     if (value > 999) {
         digit[0] = (uint8_t)~0b01111001; // 'E'
@@ -81,7 +81,7 @@ static inline void display_voltage(uint16_t voltage) {
 uint16_t filter(uint16_t value) {
     static uint16_t buffer[8] = {0};    // Ring buffer to store last 8 values
     static uint8_t index = 0;           // Current position in ring buffer (0-7)
-    static uint32_t sum = 0;            // Running sum of all 8 values
+    static uint16_t sum = 0;            // Running sum of all 8 values (fits ADC*3 averaged over 8 samples)
     
     // Subtract the oldest value that will be replaced
     sum -= buffer[index];
